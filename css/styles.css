@@ -1,0 +1,746 @@
+/* ============================================
+   MINECRAFT-INSPIRED 3D GAME - CSS STYLES
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+    background: #1a1a2e;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+canvas {
+    display: block;
+    outline: none;
+}
+
+/* ==================== LOADING SCREEN ==================== */
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    color: #fff;
+}
+
+.loading-content h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.progress-bar-container {
+    width: 300px;
+    height: 20px;
+    background: #333;
+    border-radius: 4px;
+    margin: 1rem auto;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+#loading-text {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+/* ==================== HUD ==================== */
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#ui-layer.hidden {
+    display: none;
+}
+
+#hud {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none;
+}
+
+/* Health Bar */
+.hud-panel {
+    width: 80px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.hud-health .bar-container {
+    height: 15px;
+    background: #3a0808;
+    position: relative;
+}
+
+#health-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+    transition: width 0.3s ease;
+}
+
+.hud-hunger .bar-container {
+    height: 15px;
+    background: #3a2808;
+    position: relative;
+}
+
+#hunger-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #e67e22, #d35400);
+    transition: width 0.3s ease;
+}
+
+.hud-xp .bar-container {
+    height: 8px;
+    background: #1a1a2e;
+    position: relative;
+    border-radius: 3px;
+}
+
+#xp-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #f39c12, #d68915);
+    transition: width 0.3s ease;
+}
+
+/* Hotbar */
+.hotbar {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 6px;
+    align-self: center;
+}
+
+.slot {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(100, 100, 100, 0.3);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+}
+
+.slot.selected {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.slot:not(.selected):hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.slot .item-icon {
+    filter: grayscale(0.7);
+    transition: filter 0.3s;
+}
+
+.slot.selected .item-icon {
+    filter: grayscale(0);
+}
+
+/* Crosshair */
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+}
+
+.crosshair::before {
+    content: '';
+    position: absolute;
+    top: 9px;
+    left: 3px;
+    width: 18px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.crosshair::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 9px;
+    width: 2px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Block Tooltip */
+.tooltip {
+    position: absolute;
+    top: 30px;
+    right: -160px; /* Position to the right of crosshair */
+    width: 140px;
+    padding: 8px;
+    background: rgba(25, 25, 45, 0.9);
+    border: 2px solid #555;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 12px;
+    pointer-events: none;
+    transition: right 0.1s ease;
+}
+
+.tooltip.hidden {
+    display: none;
+}
+
+.tooltip h3 {
+    margin-bottom: 4px;
+    font-size: 14px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 2px;
+}
+
+.tooltip p {
+    margin: 2px 0;
+}
+
+/* ==================== MENUS ==================== */
+
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.menu.hidden {
+    display: none;
+}
+
+/* Fullscreen menu */
+.menu.fullscreen {
+    background: rgba(0, 0, 0, 0.95);
+    align-items: flex-start;
+    padding: 40px;
+}
+
+.submenu {
+    position: absolute;
+    top: 120px; /* Below main menu header */
+    left: 0;
+    width: 300px;
+    background: rgba(25, 25, 45, 0.98);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Main Menu */
+.menu h1 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.menu p {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.menu button {
+    padding: 12px 24px;
+    background: linear-gradient(180deg, #27ae60, #2ecc71);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 6px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.menu button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+}
+
+/* Settings Menu */
+.setting-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+}
+
+.setting-group label {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.setting-group input[type="range"] {
+    width: 60%;
+}
+
+.setting-group select {
+    padding: 4px 8px;
+    background: #1a1a2e;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+}
+
+/* Inventory Grid */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 36px);
+    gap: 2px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.inventory-slot {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    border-radius: 3px;
+}
+
+/* Crafting Menu */
+.crafting-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 36px);
+    gap: 2px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.crafting-slot {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    border-radius: 3px;
+}
+
+.recipe-list {
+    width: 300px;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: rgba(25, 25, 45, 0.95);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.recipe-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin-bottom: 3px;
+}
+
+.recipe-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.recipe-name {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+/* Achievements Grid */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    width: 70%;
+}
+
+.achievement-item {
+    padding: 10px;
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid #2ecc71;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.achievement-item.unlocked {
+    background: rgba(46, 204, 113, 0.25);
+}
+
+.achievement-name {
+    font-size: 0.75rem;
+    color: #fff;
+}
+
+.achievement-desc {
+    font-size: 0.65rem;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+/* Buttons */
+.menu button, .submenu button {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    margin: 4px;
+    transition: all 0.2s ease;
+}
+
+.menu button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.5);
+}
+
+.submenu button {
+    width: calc(100% - 24px);
+    margin-top: 8px;
+}
+
+/* ==================== WORLD INFO ==================== */
+
+.world-info {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    font-size: 11px;
+    color: #aaa;
+}
+
+.world-info span {
+    color: #fff;
+}
+
+/* ==================== MINIGAME UI ==================== */
+
+.mini-game-ui {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 180px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.mini-game-ui h2 {
+    margin-bottom: 8px;
+    color: #f39c12;
+}
+
+#parkour-time, #challenge-time {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.progress-bar-mini {
+    width: 100%;
+    height: 8px;
+    background: #333;
+    border-radius: 2px;
+    margin: 6px 0;
+    overflow: hidden;
+}
+
+.mini-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #e74c3c, #f39c12);
+    transition: width 0.5s ease;
+}
+
+.feedback {
+    color: #2ecc71;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+/* ==================== BUTTONS ==================== */
+
+.pause-btn, .instructions-btn, .settings-btn, 
+.inventory-btn, .crafting-btn, .achievements-btn,
+.parkour-btn, .world-info-btn {
+    position: absolute;
+    bottom: 10px;
+    padding: 8px 14px;
+    background: rgba(30, 30, 50, 0.9);
+    border: 2px solid #555;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.pause-btn { left: 50%; transform: translateX(-50%); }
+.instructions-btn { left: 20px; bottom: 70px; }
+.settings-btn { right: 20px; bottom: 70px; }
+.inventory-btn { bottom: 160px; right: auto; left: 50%; transform: translateX(-50%); }
+.crafting-btn { bottom: 230px; right: auto; left: 50%; transform: translateX(-50%); }
+.achievements-btn { top: 160px; right: 20px; }
+.parkour-btn { top: 100px; right: 20px; background: #e74c3c; }
+.world-info-btn { bottom: 160px; left: 20px; }
+
+.pause-btn:hover, .instructions-btn:hover, .settings-btn:hover,
+.inventory-btn:hover, .crafting-btn:hover, .achievements-btn:hover,
+.parkour-btn:hover, .world-info-btn:hover {
+    background: rgba(50, 50, 80, 1);
+    border-color: #aaa;
+    transform: scale(1.05);
+}
+
+/* ==================== INSTRUCTIONS ==================== */
+
+#instructions-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+}
+
+#instructions-overlay .overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#instructions-overlay h2 {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 8px;
+    max-width: 900px;
+}
+
+.control-item {
+    background: rgba(25, 25, 45, 0.8);
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 3px solid #2ecc71;
+}
+
+.control-item strong {
+    color: #2ecc71;
+}
+
+/* ==================== CHAT ==================== */
+
+#chat-container {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    max-width: 90vw;
+    height: 180px;
+    background: rgba(20, 20, 40, 0.95);
+    border-radius: 8px;
+    border: 2px solid #333;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 13px;
+}
+
+.chat-message {
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.chat-message .sender {
+    color: #2ecc71;
+    margin-right: 8px;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 5px;
+    padding: 8px;
+}
+
+#chat-input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    padding: 6px 10px;
+}
+
+#chat-input:focus {
+    outline: 2px solid #2ecc71;
+}
+
+/* ==================== PARKOUR MODE STYLES ==================== */
+
+.parkour-mode .crosshair::before,
+.parkour-mode .crosshair::after {
+    background: rgba(46, 204, 113, 0.8);
+}
+
+.parkour-mode #health-bar,
+.parkour-mode #hunger-bar {
+    opacity: 0.5;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+    .hotbar {
+        gap: 3px;
+        padding: 4px;
+    }
+
+    .slot {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .inventory-grid {
+        grid-template-columns: repeat(9, 26px);
+    }
+
+    .crafting-slot {
+        width: 26px;
+        height: 26px;
+    }
+
+    .world-info {
+        display: none;
+    }
+
+    #chat-container {
+        bottom: 80px;
+        height: 140px;
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes flash-red {
+    0%, 100% { background-color: rgba(231, 76, 60, 0.8); }
+    50% { background-color: rgba(231, 76, 60, 1); }
+}
+
+@keyframes flash-green {
+    0%, 100% { background-color: rgba(46, 204, 113, 0.8); }
+    50% { background-color: rgba(46, 204, 113, 1); }
+}
+
+.flash-red {
+    animation: flash-red 0.3s ease;
+}
+
+.flash-green {
+    animation: flash-green 0.3s ease;
+}
+
+/* ==================== SCROLLBARS ==================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a2e;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
