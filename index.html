@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Minecraft-Inspired 3D Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Perlin Noise library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen-overlay">
+            <div class="loading-content">
+                <h1>MINECRAFT-INSPIRED 3D GAME</h1>
+                <p>Generating textures and sounds...</p>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+                <p id="loading-text">Initializing engine...</p>
+            </div>
+        </div>
+
+        <!-- Main Game Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- UI Overlay -->
+        <div id="ui-layer" class="hidden">
+            <!-- HUD -->
+            <div id="hud" class="hidden">
+                <!-- Health Bar -->
+                <div class="hud-panel hud-health" title="Health">
+                    <span class="label">❤️</span>
+                    <div class="bar-container">
+                        <div id="health-bar" class="bar health"></div>
+                    </div>
+                </div>
+
+                <!-- Hunger Bar -->
+                <div class="hud-panel hud-hunger" title="Hunger">
+                    <span class="label">🍖</span>
+                    <div class="bar-container">
+                        <div id="hunger-bar" class="bar hunger"></div>
+                    </div>
+                </div>
+
+                <!-- Experience Bar -->
+                <div class="hud-panel hud-xp" title="Experience Level">
+                    <span class="label">⭐</span>
+                    <div class="bar-container">
+                        <div id="xp-bar" class="bar xp"></div>
+                    </div>
+                </div>
+
+                <!-- Hotbar -->
+                <div id="hotbar" class="hotbar">
+                    <div class="slot" data-slot="0"><span class="item-icon">🌾</span></div>
+                    <div class="slot" data-slot="1"><span class="item-icon">🪵</span></div>
+                    <div class="slot" data-slot="2"><span class="item-icon">⛏️</span></div>
+                    <div class="slot" data-slot="3"><span class="item-icon">🗺️</span></div>
+                    <div class="slot" data-slot="4"></div>
+                    <div class="slot" data-slot="5"><span class="item-icon">🔨</span></div>
+                    <div class="slot" data-slot="6"><span class="item-icon">🥖</span></div>
+                    <div class="slot" data-slot="7"></div>
+                    <div class="slot" data-slot="8"><span class="item-icon">⚔️</span></div>
+                </div>
+
+                <!-- Crosshair -->
+                <div id="crosshair" class="crosshair">+</div>
+
+                <!-- Block Info Tooltip -->
+                <div id="block-tooltip" class="tooltip hidden">
+                    <h3>Grass Block</h3>
+                    <p>Hardness: 0.5 | Tool: Hand</p>
+                    <p class="description">A block of grass found on the surface.</p>
+                </div>
+
+                <!-- Chat -->
+                <div id="chat-container" class="chat hidden">
+                    <div id="chat-messages"></div>
+                    <input type="text" id="chat-input" placeholder="Say something...">
+                    <button onclick="game.addChatMessage()">Send</button>
+                </div>
+
+                <!-- Settings Menu -->
+                <div id="settings-menu" class="menu hidden">
+                    <h2>Settings</h2>
+                    <div class="setting-group">
+                        <label>FPS: <span id="fps-display">60</span></label>
+                        <input type="range" min="1" max="120" value="60" onchange="game.setFPS(this.value)">
+                    </div>
+                    <div class="setting-group">
+                        <label>Render Distance: <span id="chunks-display">8 chunks</span></label>
+                        <input type="range" min="3" max="16" value="8" onchange="game.setChunks(this.value)">
+                    </div>
+                    <div class="setting-group">
+                        <label>Graphics Quality: Standard</label>
+                        <select id="graphics-select">
+                            <option value="low">Low (Fast)</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Game Mode:</label>
+                        <select id="gamemode-select">
+                            <option value="survival" selected>Survival</option>
+                            <option value="creative">Creative</option>
+                        </select>
+                    </div>
+                    <button onclick="game.toggleSettings()">Close ✕</button>
+                </div>
+
+                <!-- Inventory Menu -->
+                <div id="inventory-menu" class="menu hidden">
+                    <h2>Inventory</h2>
+                    <div id="inventory-grid" class="inventory-grid"></div>
+                    <div class="player-stats">
+                        <p>Total Items: <span id="total-items">0</span></p>
+                        <p>Saved Slots: 5 / 9</p>
+                    </div>
+                </div>
+
+                <!-- Crafting Menu -->
+                <div id="crafting-menu" class="menu hidden">
+                    <h2>Crafting Table</h2>
+                    <div id="recipe-list" class="recipe-list"></div>
+                </div>
+
+                <!-- Achievement Menu -->
+                <div id="achievements-menu" class="menu hidden">
+                    <h2>Achievements</h2>
+                    <div id="achievements-grid" class="achievements-grid"></div>
+                </div>
+
+                <!-- Parkour Challenge Menu -->
+                <div id="parkour-menu" class="menu hidden">
+                    <h2>Parkour Challenge</h2>
+                    <p>A procedurally generated obstacle course!</p>
+                    <p>Reach the top within 60 seconds.</p>
+                    <button onclick="game.startParkour()">Start Challenge 🏃</button>
+                </div>
+
+                <!-- Game Over Screen -->
+                <div id="game-over-menu" class="menu hidden">
+                    <h2>You Died! 💀</h2>
+                    <p>Score: <span id="death-score">0</span></p>
+                    <button onclick="game.respawn()">Respawn 🔄</button>
+                </div>
+
+                <!-- Main Menu -->
+                <div id="main-menu" class="menu fullscreen">
+                    <h1>MINECRAFT-INSPIRED 3D GAME</h1>
+                    <p>A fully playable voxel-based game built in pure JavaScript.</p>
+                    <button onclick="game.startGame()">▶ Play Game</button>
+                    <button onclick="game.openInventory()">🎒 Inventory</button>
+                    <button onclick="game.openCrafting()">⚒️ Crafting Table</button>
+                    <button onclick="game.openAchievements()">⭐ Achievements</button>
+                    <button onclick="game.startParkour()">🏃 Parkour Challenge</button>
+                    <div class="menu-links">
+                        <a href="#">Credits & Sources</a>
+                    </div>
+                </div>
+
+                <!-- Settings Sub-menu -->
+                <div id="settings-submenu" class="submenu hidden">
+                    <h3>Sound Settings</h3>
+                    <label><input type="checkbox" checked onchange="game.setSound('music', this.checked)"> Background Music</label>
+                    <label><input type="checkbox" checked onchange="game.setSound('ambient', this.checked)"> Ambient Sounds</label>
+                    <label><input type="checkbox" checked onchange="game.setSound('block', this.checked)"> Block Sounds</label>
+                    <label><input type="checkbox" checked onchange="game.setSound('mob', this.checked)"> Mob Sounds</label>
+                    <label><input type="checkbox" checked onchange="game.setSound('player', this.checked)"> Player Sounds</label>
+                    <button onclick="document.getElementById('settings-submenu').classList.add('hidden')">Back ←</button>
+                </div>
+
+                <!-- Instructions Overlay -->
+                <div id="instructions-overlay" class="overlay hidden">
+                    <h2>Controls Guide</h2>
+                    <div class="control-grid">
+                        <div><strong>W/A/S/D</strong> - Move Forward/Backward/Left/Right</div>
+                        <div><strong>SPACE</strong> - Jump / Fly Up (Creative)</div>
+                        <div><strong>SHIFT</strong> - Sprint</div>
+                        <div><strong>CTRL</strong> - Crouch / Slide Down</div>
+                        <div><strong>MOUSE LOOK</strong> - Look Around</div>
+                        <div><strong>LEFT CLICK</strong> - Mine Block / Place Block</div>
+                        <div><strong>RIGHT CLICK</strong> - Place Block on face you're facing</div>
+                        <div><strong>1-5</strong> - Select Hotbar Slot</div>
+                        <div><strong>E</strong> - Open/Close Inventory</div>
+                        <div><strong>T</strong> - Open Crafting Table</div>
+                        <div><strong>B</strong> - Toggle Sprint Slider</div>
+                        <div><strong>F</strong> - Toggle Flashlight / Third Person</div>
+                        <div><strong>I</strong> - Show/Hide HUD</div>
+                        <div><strong>R</strong> - Reset Position</div>
+                    </div>
+                    <button onclick="document.getElementById('instructions-overlay').classList.add('hidden')">Close X</button>
+                </div>
+
+                <!-- Pause Menu -->
+                <div id="pause-menu" class="menu fullscreen hidden">
+                    <h2>PAUSED ⏸</h2>
+                    <button onclick="game.resumeGame()">▶ Resume</button>
+                    <button onclick="game.showInstructions()">📖 Instructions</button>
+                    <button onclick="game.openSettings()">⚙️ Settings</button>
+                </div>
+
+                <!-- Mini-game: Parkour Progress -->
+                <div id="parkour-ui" class="mini-game-ui hidden">
+                    <h2>Parkour Challenge</h2>
+                    <p class="timer">Time: <span id="parkour-time">60.00</span>s</p>
+                    <p class="progress-text">Progress: <span id="parkour-progress">0%</span></p>
+                    <div class="progress-bar-mini"><div id="parkour-bar" class="mini-bar"></div></div>
+                    <p id="parkour-feedback" class="feedback"></p>
+                </div>
+
+                <!-- Mini-game: Survival Challenge -->
+                <div id="survival-challenge-ui" class="mini-game-ui hidden">
+                    <h2>Survival Challenge</h2>
+                    <p>Survive in a hostile world for as long as possible!</p>
+                    <p class="timer">Time Survived: <span id="challenge-time">0.00</span>s</p>
+                    <p class="score-text">Mobs Killed: <span id="challenge-kills">0</span></p>
+                    <div class="progress-bar-mini"><div id="challenge-bar" class="mini-bar"></div></div>
+                </div>
+
+                <!-- World Info -->
+                <div id="world-info" class="world-info hidden">
+                    <p>X: <span id="pos-x">0</span> | Y: <span id="pos-y">64</span> | Z: <span id="pos-z">0</span></p>
+                    <p>Biome: <span id="biome-name">Plains</span></p>
+                    <p>Chunk: (<span id="chunk-x">0</span>, <span id="chunk-z">0</span>)</p>
+                    <button onclick="game.cycleBlockType()">Cycle Block Type 🔄</button>
+                </div>
+            </div>
+
+            <!-- Pause Button -->
+            <button class="pause-btn" onclick="game.togglePause()">⏸</button>
+
+            <!-- Instructions Button -->
+            <button class="instructions-btn" onclick="game.showInstructions()">📖</button>
+
+            <!-- Settings Button -->
+            <button class="settings-btn" onclick="game.openSettings()">⚙️</button>
+
+            <!-- Inventory Button -->
+            <button class="inventory-btn" id="inv-toggle">🎒</button>
+
+            <!-- Crafting Button -->
+            <button class="crafting-btn" id="craft-toggle">⚒️</button>
+
+            <!-- Achievements Button -->
+            <button class="achievements-btn" onclick="game.openAchievements()">⭐</button>
+
+            <!-- Parkour Challenge Button -->
+            <button class="parkour-btn" onclick="game.startParkour()">🏃</button>
+
+            <!-- World Info Toggle -->
+            <button class="world-info-btn" onclick="game.toggleWorldInfo()">ℹ️</button>
+        </div>
+
+        <!-- Mobs Render Layer -->
+        <canvas id="mobs-canvas"></canvas>
+
+        <!-- Particles Canvas -->
+        <canvas id="particles-canvas"></canvas>
+    </div>
+
+    <!-- Game Logic Script -->
+    <script src="js/world.js"></script>
+    <script src="js/chunks.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/mobs.js"></script>
+    <script src="js/crafting.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
